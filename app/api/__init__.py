@@ -1,10 +1,14 @@
 """ API Blueprint Application """
 
 from flask import Blueprint, current_app
+from .security  import authorizations
+import werkzeug
+werkzeug.cached_property = werkzeug.utils.cached_property
+
 from flask_restplus import Api
 
 api_bp = Blueprint('api_bp', __name__, url_prefix='/api')
-api_rest = Api(api_bp)
+api_rest = Api(api_bp, authorizations=authorizations)
 
 
 @api_bp.after_request
@@ -15,3 +19,5 @@ def add_header(response):
 
 # Import resources to ensure view is registered
 from .resources import * # NOQA
+from .produit import *
+from .user import *

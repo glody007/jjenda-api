@@ -1,0 +1,30 @@
+import pytest
+from app.models.user import *
+from app.models.plan import PlanType
+from app.models.produit import Produit
+from . import *
+
+def test_from_user_info(exemple_user_data):
+    user = User.from_user_info(exemple_user_data)
+    assert user.nom == exemple_user_data['nom']
+    assert user.email == exemple_user_data['email']
+    assert user.type == UserType.ENREGISTRER
+    assert user.phone_number ==  exemple_user_data['phone_number']
+
+def test_insert(drop_all, exemple_user_data):
+    user = User.from_user_info(exemple_user_data)
+    assert User.objects.count() == 0
+    User.insert(user)
+    assert User.objects.count() == 1
+    assert user.plan.type == PlanType.STANDARD['NOM']
+
+def test_add_article(drop_all, exemple_user_data, exemple_produit_data):
+    user = User.from_user_info(exemple_user_data)
+    User.insert(user)
+    produit = Produit.product_from_dict(exemple_produit_data)
+    assert Produit.objects.count() == 0
+    user.add_article(produit)
+    assert Produit.objects.count() == 1
+    assert len(user.produits) == 1
+    assert len(produit.vendeur_id) > 10
+    assert produit.vendeur_id == str(user.id)

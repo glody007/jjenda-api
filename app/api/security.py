@@ -4,6 +4,14 @@ from flask import request
 from flask_restplus import abort
 
 
+authorizations = {
+    'apiKey' : {
+        'type' : 'apiKey',
+        'in' : 'header',
+        'name' : 'X-API-KEY'
+    }
+}
+
 def require_auth(func):
     """ Secure method decorator """
     @wraps(func)
