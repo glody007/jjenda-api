@@ -1,32 +1,80 @@
 from flask import request
-from flask_restplus import Resource, abort
+from flask_restplus import Resource, abort, fields
 from . import api_rest
-from ..models.user import  User as UserModel
+from ..models import  User as UserModel
+
+error_email_and_phone_number = {
+                                  "errors": {
+                                    "nom": "'email' or 'phone number' is wrong"
+                                  },
+                                  "message": "Input payload validation failed"
+                                }, 400
+
+user_fields  = api_rest.model('User', {
+    'id': fields.String(attribute=lambda x: str(x.id)),
+    'nom': fields.String(required=True, min_length=3, max_length=50),
+    'phone_number': fields.String(required=True, min_length=10, max_length=13),
+    'email': fields.String(required=True),
+    'longitude': fields.Float(),
+    'latitude': fields.Float(),
+    'plan_type': fields.String(attribute=lambda x: x.plan.type)
+})
+
+user_list_fields = api_rest.model('UserList', {
+    'users': fields.List(fields.Nested(user_fields))
+})
 
 @api_rest.route('/users')
 class UserList(Resource):
-    """ Unsecure Resource Class: Inherit from Resource """
-
+    @api_rest.marshal_with(user_list_fields)
+    @api_rest.response(200, 'Success', user_list_fields)
     def get(self):
-        return UserModel.objects().to_json()
+        return {'users' : UserModel.objects()}, 200
 
+    api_rest.doc(security='apiKey')
+    @api_rest.expect(user_fields, validate=True)
+    @api_rest.response(201, 'Success')
+    @api_rest.response(400, 'Validation Error')
     def post(self):
-        UserModel.from_user_info({
-            'nom':'root',
-            'email':'glodymbutwile@gmail.com',
-            'phone_number':'+2439999999'
-        })
+        try:
+            user = UserModel.from_user_info(request.json)
+            UserModel.insert(user)
+        except:
+            return error_email_and_phone_number, 400
         return {'result': 'success'}, 201
 
 @api_rest.route('/user/<user_id>')
 class User(Resource):
-    """ Unsecure Resource Class: Inherit from Resource """
+    @api_rest.marshal_with(user_fields)
+    @api_rest.response(200, 'Success', user_fields)
+    @api_rest.response(404, 'Ressource not found')
     def get(self, user_id):
-        user = UserModel.objects(unique_id=str(user_id)).first()
+        user = UserModel.objects.with_id(user_id)
         if user == None:
             abort(404)
-        return user.to_json()
+        return user, 200
 
+    @api_rest.doc(security='apiKey')
+    @api_rest.expect(user_fields, validate=True)
+    @api_rest.response(201, 'Success')
+    @api_rest.response(400, 'Validation Error')
+    @api_rest.response(404, 'Ressource not found')
     def put(self, user_id):
-        json_payload = request.json
-        return {'name': json_payload}, 201
+        user = UserModel.objects.with_id(user_id)
+        if user == None:
+            abort(404)
+        try:
+            user.update_from_info(request.json)
+        except:
+            return error_email_and_phone_number, 400
+        return {'result': 'success'}, 201
+
+    @api_rest.doc(security='apiKey')
+    @api_rest.response(201, 'Success')
+    @api_rest.response(404, 'Ressource not found')
+    def delete(self, user_id):
+        user = UserModel.objects.with_id(user_id)
+        if user == None:
+            abort(404)
+        user.delete()
+        return {'result': 'success'}, 200

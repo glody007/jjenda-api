@@ -12,7 +12,7 @@ class User(Document):
     type = StringField(required=True, default=UserType.ENREGISTRER)
     nom = StringField(required=True, min_length=3, max_length=50)
     source =  StringField(required=True, default=SourceType.USER)
-    phone_number = StringField(required=True, in_length=10, max_length=13)
+    phone_number = StringField(required=True, min_length=10, max_length=13)
     email = EmailField(min_length=10)
     url_photo = URLField(min_length=10)
     localisation = GeoPointField()
@@ -31,6 +31,12 @@ class User(Document):
                      phone_number = user_info["phone_number"],
                      email = user_info["email"])
         return user
+
+    def update_from_info(self, user_info):
+        self.nom = user_info['nom']
+        self.phone_number = user_info['phone_number']
+        self.email = user_info['email']
+        self.save()
 
     @staticmethod
     def from_raw(product_raw):

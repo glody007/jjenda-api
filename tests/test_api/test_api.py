@@ -2,11 +2,7 @@
 
 import pytest
 from app import app
-
-@pytest.fixture(scope="module")
-def client():
-    app.config['TESTING'] = True
-    return app.test_client()
+from . import client
 
 def test_api(client):
     resp = client.get('/api/')
