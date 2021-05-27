@@ -2,6 +2,8 @@ from mongoengine import *
 from .produit import *
 from .plan import *
 import datetime
+import os
+import jwt
 
 
 class UserType:
@@ -13,11 +15,49 @@ class User(Document):
     nom = StringField(required=True, min_length=3, max_length=50)
     source =  StringField(required=True, default=SourceType.USER)
     phone_number = StringField(required=True, min_length=10, max_length=13)
+    password = StringField(min_length=3)
     email = EmailField(min_length=10)
     url_photo = URLField(min_length=10)
     localisation = GeoPointField()
     produits = ListField(ReferenceField(Produit))
     plan = ReferenceField(Plan)
+
+    def check_password(self, password):
+        return password == self.password
+
+    def encode_auth_token(self):
+        """
+        Generates the Auth Token
+        :return: string
+        """
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': str(self.id)
+            }
+            return jwt.encode(
+                payload,
+                os.getenv('SECRET_KEY', 'my_precious'),
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
+
+    @staticmethod
+    def decode_auth_token(auth_token):
+        """
+        Decodes the auth token
+        :param auth_token:
+        :return: integer|string
+        """
+        try:
+            payload = jwt.decode(auth_token, os.getenv('SECRET_KEY', 'my_precious'))
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired. Please log in again.'
+        except jwt.InvalidTokenError:
+            return 'Invalid token. Please log in again.'
 
     @staticmethod
     def insert(user, plan_type=PlanType.STANDARD):
@@ -30,6 +70,15 @@ class User(Document):
         user =  User(nom = user_info["nom"],
                      phone_number = user_info["phone_number"],
                      email = user_info["email"])
+        return user
+
+    @staticmethod
+    def register(user_info):
+        user =  User(nom = user_info["nom"],
+                     phone_number = user_info["phone_number"],
+                     email = user_info["email"],
+                     password = user_info["password"])
+        User.insert(user)
         return user
 
     def update_from_info(self, user_info):

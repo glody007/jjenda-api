@@ -6,11 +6,25 @@ from flask_restplus import abort
 
 error_email_and_phone_number = {
                                   "errors": {
-                                    "nom": "'email' or 'phone number' is wrong"
+                                    "email": "'email' or 'phone number' is wrong"
                                   },
                                   "message": "Input payload validation failed"
                                 }, 400
 
+error_user_with_same_email = {
+                              "result": "fail",
+                              "message": "Email already use by another user. Please Log in."
+                             }, 202
+
+error_user_with_same_phone_number = {
+                                      "result": "fail",
+                                      "message": "Phone number already use by another user. Please Log in."
+                                    }, 202
+
+error_wrong_credentials = {
+                              "result": "fail",
+                              "message": "Wrong credentials."
+                          }, 404
 
 def validate_ObjectId_or_404(id_name):
     def actual_validate_ObjectId_decorator(func):

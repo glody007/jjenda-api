@@ -11,7 +11,7 @@ user_fields  = api_rest.model('User', {
     'email': fields.String(required=True),
     'longitude': fields.Float(),
     'latitude': fields.Float(),
-    'plan_type': fields.String(attribute=lambda x: x.plan.type)
+    'plan_type': fields.String(attribute=lambda x: None if x.plan == None else x.plan.type)
 })
 
 user_list_fields = api_rest.model('UserList', {

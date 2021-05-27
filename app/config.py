@@ -14,6 +14,8 @@ class Config(object):
     # Set FLASK_SECRET on your production Environment
     SECRET_KEY = os.getenv('FLASK_SECRET', 'Secret')
 
+    SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious')
+
     APP_DIR = os.path.dirname(__file__)
     ROOT_DIR = os.path.dirname(APP_DIR)
     DIST_DIR = os.path.join(ROOT_DIR, 'dist')

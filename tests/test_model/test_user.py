@@ -28,3 +28,16 @@ def test_add_article(drop_all, exemple_user_data, exemple_produit_data):
     assert len(user.produits) == 1
     assert len(produit.vendeur_id) > 10
     assert produit.vendeur_id == str(user.id)
+
+def test_user_encode_auth_token(exemple_user_data):
+    user = User.from_user_info(exemple_user_data)
+    User.insert(user)
+    auth_token = user.encode_auth_token()
+    assert isinstance(auth_token, bytes)
+
+def test_user_decode_auth_token(exemple_user_data):
+    user = User.from_user_info(exemple_user_data)
+    User.insert(user)
+    auth_token = user.encode_auth_token()
+    assert isinstance(auth_token, bytes)
+    assert User.decode_auth_token(auth_token) == str(user.id)

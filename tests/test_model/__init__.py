@@ -25,6 +25,7 @@ def exemple_produit_data():
 @pytest.fixture(scope="module")
 def exemple_user_data():
     return {'nom': 'root',
+            'password': 'password',
             'phone_number': "+2439999999",
             'email': "jjenda@jjenda.com"}
 
