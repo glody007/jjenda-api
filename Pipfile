@@ -15,6 +15,7 @@ flask-login = "*"
 geopy = "*"
 pytest = "*"
 pyjwt = "==1.4.2"
+flask-bcrypt = "*"
 
 [dev-packages]
 pytest = "*"

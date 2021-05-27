@@ -4,7 +4,7 @@ from .plan import *
 import datetime
 import os
 import jwt
-
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 class UserType:
     ENREGISTRER  = "enregistrer"
@@ -15,7 +15,7 @@ class User(Document):
     nom = StringField(required=True, min_length=3, max_length=50)
     source =  StringField(required=True, default=SourceType.USER)
     phone_number = StringField(required=True, min_length=10, max_length=13)
-    password = StringField(min_length=3)
+    password_hash = StringField(min_length=20)
     email = EmailField(min_length=10)
     url_photo = URLField(min_length=10)
     localisation = GeoPointField()
@@ -23,7 +23,7 @@ class User(Document):
     plan = ReferenceField(Plan)
 
     def check_password(self, password):
-        return password == self.password
+        return check_password_hash(self.password_hash, password)
 
     def encode_auth_token(self):
         """
@@ -32,7 +32,7 @@ class User(Document):
         """
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=300, seconds=5),
                 'iat': datetime.datetime.utcnow(),
                 'sub': str(self.id)
             }
@@ -77,7 +77,7 @@ class User(Document):
         user =  User(nom = user_info["nom"],
                      phone_number = user_info["phone_number"],
                      email = user_info["email"],
-                     password = user_info["password"])
+                     password_hash = generate_password_hash(user_info["password"], 12).decode('utf-8'))
         User.insert(user)
         return user
 
