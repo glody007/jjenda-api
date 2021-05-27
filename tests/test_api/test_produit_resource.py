@@ -37,22 +37,28 @@ def test_produit_get(drop_all, client, exemple_produit_data):
     produit = insert_produit(exemple_produit_data)
     resp_get = client.get('/api/produit/55153a8014829a865bbf700d')
     assert resp_get.status_code == 404
+    resp_get = client.get('/api/produit/23')
+    assert resp_get.status_code == 404
     resp_get = client.get('/api/produit/{}'.format(str(produit.id)))
     assert resp_get.status_code == 200
     assert resp_get.json['categorie'] == exemple_produit_data['categorie']
 
 def test_produit_delete(drop_all, client, exemple_produit_data):
     produit = insert_produit(exemple_produit_data)
-    resp_get = client.delete('/api/produit/55153a8014829a865bbf700d')
-    assert resp_get.status_code == 404
+    resp_del = client.delete('/api/produit/55153a8014829a865bbf700d')
+    assert resp_del.status_code == 404
+    resp_del = client.delete('/api/produit/23')
+    assert resp_del.status_code == 404
     assert produit_count() == 1
-    resp_get = client.delete('/api/produit/{}'.format(str(produit.id)))
-    assert resp_get.status_code == 200
+    resp_del = client.delete('/api/produit/{}'.format(str(produit.id)))
+    assert resp_del.status_code == 200
     assert produit_count() == 0
 
-def test_produit_list_post(drop_all, client, exemple_produit_data):
+def test_produit_list_put(drop_all, client, exemple_produit_data):
     produit = insert_produit(exemple_produit_data)
     resp_put = client.put('/api/produit/55153a8014829a865bbf700d', json=exemple_produit_data)
+    assert resp_put.status_code == 404
+    resp_put = client.put('/api/produit/23', json=exemple_produit_data)
     assert resp_put.status_code == 404
     exemple = deepcopy(exemple_produit_data)
     exemple['categorie'] = ''

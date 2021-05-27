@@ -2,6 +2,8 @@ from flask import request
 from flask_restplus import Resource, abort, fields
 from . import api_rest
 from ..models import Produit as ProduitModel
+from .validation import *
+
 
 produit_basic_fields  = api_rest.model('Produit basic', {
     'categorie': fields.String(required=True, min_length=3),
@@ -51,6 +53,7 @@ class Produit(Resource):
     @api_rest.marshal_with(produit_complete_fields)
     @api_rest.response(200, 'Success', produit_complete_fields)
     @api_rest.response(404, 'Ressource not found')
+    @validate_ObjectId_or_404('produit_id')
     def get(self, produit_id):
         produit = ProduitModel.objects.with_id(produit_id)
         if produit == None:
@@ -62,6 +65,7 @@ class Produit(Resource):
     @api_rest.response(201, 'Success')
     @api_rest.response(400, 'Validation Error')
     @api_rest.response(404, 'Ressource not found')
+    @validate_ObjectId_or_404('produit_id')
     def put(self, produit_id):
         produit = ProduitModel.objects.with_id(produit_id)
         if produit == None:
@@ -71,6 +75,7 @@ class Produit(Resource):
     @api_rest.doc(security='apiKey')
     @api_rest.response(201, 'Success')
     @api_rest.response(404, 'Ressource not found')
+    @validate_ObjectId_or_404('produit_id')
     def delete(self, produit_id):
         produit = ProduitModel.objects.with_id(produit_id)
         if produit == None:

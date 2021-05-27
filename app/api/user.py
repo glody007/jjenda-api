@@ -2,13 +2,7 @@ from flask import request
 from flask_restplus import Resource, abort, fields
 from . import api_rest
 from ..models import  User as UserModel
-
-error_email_and_phone_number = {
-                                  "errors": {
-                                    "nom": "'email' or 'phone number' is wrong"
-                                  },
-                                  "message": "Input payload validation failed"
-                                }, 400
+from .validation import *
 
 user_fields  = api_rest.model('User', {
     'id': fields.String(attribute=lambda x: str(x.id)),
@@ -48,6 +42,7 @@ class User(Resource):
     @api_rest.marshal_with(user_fields)
     @api_rest.response(200, 'Success', user_fields)
     @api_rest.response(404, 'Ressource not found')
+    @validate_ObjectId_or_404('user_id')
     def get(self, user_id):
         user = UserModel.objects.with_id(user_id)
         if user == None:
@@ -59,6 +54,7 @@ class User(Resource):
     @api_rest.response(201, 'Success')
     @api_rest.response(400, 'Validation Error')
     @api_rest.response(404, 'Ressource not found')
+    @validate_ObjectId_or_404('user_id')
     def put(self, user_id):
         user = UserModel.objects.with_id(user_id)
         if user == None:
@@ -72,6 +68,7 @@ class User(Resource):
     @api_rest.doc(security='apiKey')
     @api_rest.response(201, 'Success')
     @api_rest.response(404, 'Ressource not found')
+    @validate_ObjectId_or_404('user_id')
     def delete(self, user_id):
         user = UserModel.objects.with_id(user_id)
         if user == None:

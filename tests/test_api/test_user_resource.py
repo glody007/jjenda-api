@@ -26,23 +26,29 @@ def test_user_get(drop_all, client, exemple_user_data):
     user = insert_user(exemple_user_data)
     resp_get = client.get('/api/user/55153a8014829a865bbf700d')
     assert resp_get.status_code == 404
+    resp_get = client.get('/api/user/23')
+    assert resp_get.status_code == 404
     resp_get = client.get('/api/user/{}'.format(str(user.id)))
     assert resp_get.status_code == 200
     assert resp_get.json['nom'] == exemple_user_data['nom']
 
 def test_user_delete(drop_all, client, exemple_user_data):
     user = insert_user(exemple_user_data)
-    resp_get = client.delete('/api/user/55153a8014829a865bbf700d')
-    assert resp_get.status_code == 404
+    resp_del = client.delete('/api/user/55153a8014829a865bbf700d')
+    assert resp_del.status_code == 404
+    resp_del = client.delete('/api/user/23')
+    assert resp_del.status_code == 404
     assert user_count() == 1
-    resp_get = client.delete('/api/user/{}'.format(str(user.id)))
-    assert resp_get.status_code == 200
+    resp_del = client.delete('/api/user/{}'.format(str(user.id)))
+    assert resp_del.status_code == 200
     assert user_count() == 0
 
 def test_user_put(drop_all, client, exemple_user_data):
     user = insert_user(exemple_user_data)
     resp_put = client.put('/api/user/55153a8014829a865bbf700d', json=exemple_user_data)
     assert resp_put.status_code == 404
+    resp_get = client.put('/api/user/23', json=exemple_user_data)
+    assert resp_get.status_code == 404
     resp_put = client.put('/api/user/{}'.format(str(user.id)), json=exemple_user_data)
     assert resp_put.status_code == 201
     resp_put= client.put('/api/user/{}'.format(str(user.id)), json={'nom':'root'})
