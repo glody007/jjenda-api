@@ -26,6 +26,11 @@ error_wrong_credentials = {
                               "message": "Wrong credentials."
                           }, 404
 
+error_invalid_auth_token = {
+                              "result": "fail",
+                              "message": "Provide a valid auth token."
+                          }, 401
+
 def validate_ObjectId_or_404(id_name):
     def actual_validate_ObjectId_decorator(func):
         @wraps(func)

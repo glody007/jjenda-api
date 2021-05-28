@@ -3,6 +3,7 @@ from flask_restplus import Resource, abort, fields
 from . import api_rest
 from ..models import  User as UserModel
 from .validation import *
+from .security import require_auth
 
 user_fields  = api_rest.model('User', {
     'id': fields.String(attribute=lambda x: str(x.id)),
@@ -25,7 +26,8 @@ class UserList(Resource):
     def get(self):
         return {'users' : UserModel.objects()}, 200
 
-    api_rest.doc(security='apiKey')
+    @api_rest.doc(security='apiKey')
+    @api_rest.response(401, 'Unauthorized')
     @api_rest.expect(user_fields, validate=True)
     @api_rest.response(201, 'Success')
     @api_rest.response(400, 'Validation Error')
@@ -50,6 +52,7 @@ class User(Resource):
         return user, 200
 
     @api_rest.doc(security='apiKey')
+    @api_rest.response(401, 'Unauthorized')
     @api_rest.expect(user_fields, validate=True)
     @api_rest.response(201, 'Success')
     @api_rest.response(400, 'Validation Error')
@@ -66,6 +69,7 @@ class User(Resource):
         return {'result': 'success'}, 201
 
     @api_rest.doc(security='apiKey')
+    @api_rest.response(401, 'Unauthorized')
     @api_rest.response(201, 'Success')
     @api_rest.response(404, 'Ressource not found')
     @validate_ObjectId_or_404('user_id')

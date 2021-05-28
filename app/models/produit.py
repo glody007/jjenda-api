@@ -10,7 +10,7 @@ class SourceType:
 
 class Produit(Document):
     categorie = StringField(required=True, max_length=50)
-    vendeur_id = StringField(required=True)
+    vendeur_id = StringField(required=True, default="")
     prix_initial = IntField(required=True)
     prix_actuel = IntField(required=True)
     description = StringField(required=True, max_length=200)
