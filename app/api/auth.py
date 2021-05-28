@@ -32,7 +32,6 @@ class Registration(Resource):
         user_with_phone_number = UserModel.objects(phone_number=request.json['phone_number']).first()
         if user_with_phone_number != None:
             return error_user_with_same_phone_number
-        user = UserModel.register(request.json)
         try:
             user = UserModel.register(request.json)
             auth_token = user.encode_auth_token()

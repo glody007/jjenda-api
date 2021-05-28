@@ -5,6 +5,7 @@ from flask_restplus import abort
 
 
 error_email_and_phone_number = {
+                                  "result": "fail",
                                   "errors": {
                                     "email": "'email' or 'phone number' is wrong"
                                   },

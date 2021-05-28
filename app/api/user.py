@@ -3,9 +3,10 @@ from flask_restplus import Resource, abort, fields
 from . import api_rest
 from ..models import  User as UserModel
 from .validation import *
-from .security import require_auth
+from .security import require_auth, AuthType
+from .resource_type import ResourceType
 
-user_fields  = api_rest.model('User', {
+user_fields  = api_rest.model('User info', {
     'id': fields.String(attribute=lambda x: str(x.id)),
     'nom': fields.String(required=True, min_length=3, max_length=50),
     'phone_number': fields.String(required=True, min_length=10, max_length=13),
@@ -27,6 +28,7 @@ class UserList(Resource):
         return {'users' : UserModel.objects()}, 200
 
     @api_rest.doc(security='apiKey')
+    @require_auth(type=AuthType.ADMIN)
     @api_rest.response(401, 'Unauthorized')
     @api_rest.expect(user_fields, validate=True)
     @api_rest.response(201, 'Success')
@@ -35,9 +37,14 @@ class UserList(Resource):
         try:
             user = UserModel.from_user_info(request.json)
             UserModel.insert(user)
+            return {'result': 'success', 'user': {
+                'id': str(user.id),
+                'nom': user.nom,
+                'phone_number': user.phone_number,
+                'email': user.email
+            }}, 201
         except:
             return error_email_and_phone_number, 400
-        return {'result': 'success'}, 201
 
 @api_rest.route('/user/<user_id>')
 class User(Resource):
@@ -52,6 +59,7 @@ class User(Resource):
         return user, 200
 
     @api_rest.doc(security='apiKey')
+    @require_auth(res_type=ResourceType.USER, id_name='user_id')
     @api_rest.response(401, 'Unauthorized')
     @api_rest.expect(user_fields, validate=True)
     @api_rest.response(201, 'Success')
@@ -69,6 +77,7 @@ class User(Resource):
         return {'result': 'success'}, 201
 
     @api_rest.doc(security='apiKey')
+    @require_auth(res_type=ResourceType.USER, id_name='user_id')
     @api_rest.response(401, 'Unauthorized')
     @api_rest.response(201, 'Success')
     @api_rest.response(404, 'Ressource not found')

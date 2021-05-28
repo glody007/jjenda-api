@@ -72,6 +72,11 @@ class User(Document):
                      email = user_info["email"])
         return user
 
+
+    def set_admin(self):
+        self.type = UserType.ADMIN
+        self.save()
+
     @staticmethod
     def register(user_info):
         user =  User(nom = user_info["nom"],
