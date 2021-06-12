@@ -18,6 +18,14 @@ def test_insert(drop_all, exemple_user_data):
     assert User.objects.count() == 1
     assert user.plan.type == PlanType.STANDARD['NOM']
 
+def test_register_admin(drop_all, exemple_user_data):
+    assert User.objects.count() == 0
+    user = User.register_admin(exemple_user_data)
+    assert User.objects.count() == 1
+    assert user.type == UserType.ADMIN
+    user = User.register_admin(exemple_user_data)
+    assert User.objects.count() == 1
+
 def test_add_article(drop_all, exemple_user_data, exemple_produit_data):
     user = User.from_user_info(exemple_user_data)
     User.insert(user)

@@ -13,12 +13,13 @@ class Config(object):
     FLASK_ENV =  os.getenv('FLASK_ENV', 'production')
     # Set FLASK_SECRET on your production Environment
     SECRET_KEY = os.getenv('FLASK_SECRET', 'Secret')
-
     SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious')
-
     DB_URI = os.getenv('DB_URI')
-
     DB_TEST_URI = os.getenv('DB_TEST_URI')
+    ADMIN_NAME = os.getenv('ADMIN_NAME')
+    ADMIN_NUMBER = os.getenv('ADMIN_NUMBER')
+    ADMIN_EMAIL = os.getenv('ADMIN_EMAIL')
+    ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 
     APP_DIR = os.path.dirname(__file__)
     ROOT_DIR = os.path.dirname(APP_DIR)

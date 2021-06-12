@@ -86,6 +86,14 @@ class User(Document):
         User.insert(user)
         return user
 
+    @staticmethod
+    def register_admin(user_info):
+        user = User.objects(email=user_info["email"]).first()
+        if user == None:
+            user = User.register(user_info)
+            user.set_admin()
+        return user
+
     def update_from_info(self, user_info):
         self.nom = user_info['nom']
         self.phone_number = user_info['phone_number']
