@@ -16,6 +16,10 @@ class Config(object):
 
     SECRET_KEY = os.getenv('SECRET_KEY', 'my_precious')
 
+    DB_URI = os.getenv('DB_URI')
+
+    DB_TEST_URI = os.getenv('DB_TEST_URI')
+
     APP_DIR = os.path.dirname(__file__)
     ROOT_DIR = os.path.dirname(APP_DIR)
     DIST_DIR = os.path.join(ROOT_DIR, 'dist')

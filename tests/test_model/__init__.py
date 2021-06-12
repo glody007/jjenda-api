@@ -1,10 +1,15 @@
 import pytest
 from mongoengine import *
+from flask import current_app
 from mongoengine.connection import disconnect
 from app.models.produit import Produit
 from app.models.user import User
+from app.models import init_db
+from app import app
 
-db = connect(host="mongodb://127.0.0.1:27017/test_db", alias="test")
+with app.app_context():
+    app.config['TESTING'] = True
+    init_db()
 
 @pytest.fixture
 def drop_all():

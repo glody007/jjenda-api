@@ -1,10 +1,13 @@
 from mongoengine import *
 import os
 
-if os.getenv("FLASK_ENV") == "development":
-    connect(host="mongodb://127.0.0.1:27017/dev_db")
-else:
-    db = connect(host=os.getenv("DB_URI"))
+
+def init_db():
+    from flask import current_app
+    if current_app.config['TESTING']:
+        connect(host=current_app.config['DB_TEST_URI'])
+    else:
+        connect(host=current_app.config['DB_URI'])
 
 from .plan import *
 from .produit import *

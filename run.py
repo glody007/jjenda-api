@@ -1,7 +1,7 @@
 import os
-from app import app
+from app import get_app
 
-app.run(port=5000)
+get_app().run(port=5000)
 
 # To Run:
 # python run.py
